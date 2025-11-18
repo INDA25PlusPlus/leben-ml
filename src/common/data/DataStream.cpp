@@ -97,10 +97,15 @@ DataSet DataStream::read_up_to_n(const size_t n) {
         if (images_stream.fail()) {
             throw std::runtime_error("Failed to read image");
         }
-        labels_stream.read(reinterpret_cast<char*>(&labels[size]), 1);
+        uint8_t label;
+        labels_stream.read(reinterpret_cast<char*>(&label), 1);
         if (labels_stream.fail()) {
             throw std::runtime_error("Failed to read label");
         }
+        if (label > 9) {
+            throw std::range_error(std::format("Invalid label: '{}'", label));
+        }
+        labels[size] = label;
     }
     return {size, std::move(images), std::move(labels)};
 }
