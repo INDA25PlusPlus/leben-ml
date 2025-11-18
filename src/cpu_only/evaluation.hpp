@@ -13,8 +13,8 @@ namespace evaluation {
      * e.g. A = {a_11, a_12, a_21, a_22}.
      *
      * @param a an m × n matrix
-     * @param m the amount of rows
-     * @param n the amount of columns
+     * @param m the number of rows
+     * @param n the number of columns
      */
     void activation_function(
         matrix_float_t *a,
@@ -22,25 +22,25 @@ namespace evaluation {
         size_t n);
 
     /**
-     * Applies the activation function to a in place.
+     * Evaluates each row of a matrix by comparing it to the expected value.
      *
-     * Assumes c is zero-initialized.
+     * Assumes result is zero-initialized.
      *
      * All matrix values are stored with the second index changing the fastest,
      * e.g. A = {a_11, a_12, a_21, a_22}.
      *
      * @param a an m × n matrix
-     * @param c an m × 1 matrix, the result of applying the error function
-     *        row-wise to a
-     * @param m the number of values to apply the activation function to
-     * @param n the size of each value
-     * @param correct_index the index to assign a positive eval score to. Must
-     *        be <= n
+     * @param expect an m × n matrix, representing the expected value for each
+     *        row
+     * @param result an m × 1 matrix, the result of performing a row-wise
+     *        evaluation with respect to the expected value
+     * @param m the number of rows
+     * @param n the number of columns
      */
     void eval_function(
         matrix_float_t const *a,
-        matrix_float_t *c,
+        matrix_float_t const *expect,
+        matrix_float_t *result,
         size_t m,
-        size_t n,
-        size_t correct_index);
+        size_t n);
 }
