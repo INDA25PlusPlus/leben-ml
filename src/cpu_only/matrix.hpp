@@ -105,7 +105,7 @@ namespace matrix {
         size_t p);
 
     /**
-     * B = float(A)
+     * B = float(A) / 255.0
      *
      * Casts all elements of A to floats and stores them in B
      *
@@ -117,7 +117,7 @@ namespace matrix {
      * @param m the number of rows of a and b
      * @param n the number of columns of a and b
      */
-    void to_float(
+    void to_normalized_float(
         uint8_t const *a,
         matrix_float_t *b,
         size_t m,

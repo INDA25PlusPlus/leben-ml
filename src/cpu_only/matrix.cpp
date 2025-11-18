@@ -107,7 +107,7 @@ void matrix::mult_add_vec(
     }
 }
 
-void matrix::to_float(
+void matrix::to_normalized_float(
     uint8_t const *const a,
     matrix_float_t *const b,
     size_t const m,

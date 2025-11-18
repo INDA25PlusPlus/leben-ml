@@ -8,7 +8,11 @@
 #include "../matrix.hpp"
 #include "../../common/config.hpp"
 
-inline void assert_eq(matrix_float_t const x, matrix_float_t const y, size_t const i) {
+inline void assert_eq(
+    matrix_float_t const x,
+    matrix_float_t const y,
+    size_t const i)
+{
     if (std::abs(x - y) > 0.001) {
         std::cout
             << std::format("Assertion failed at {}: {} != {}", i, x, y)
@@ -123,6 +127,42 @@ inline void test_matrix_mult_add_vec() {
     }
 }
 
-inline void test_matrix_populate_by_indices() {
+inline void test_matrix_to_float() {
+    std::array<uint8_t, 3 * 2> const a = {
+        0, 127,
+        255, 0,
+        15, 10
+    };
+    std::array<matrix_float_t, 3 * 2> b = {};
+    std::array<matrix_float_t, 3 * 2> const expect = {
+        0, (127.0 / 255.0),
+        1, 0,
+        (15.0 / 255.0), (10.0 / 255.0),
+    };
+    matrix::to_normalized_float(a.data(), b.data(), 3, 2);
+    for (auto i = 0; i < 6; i++) {
+        assert_eq(expect.at(i), b.at(i), i);
+    }
+}
 
+inline void test_matrix_populate_by_indices() {
+    std::array<uint8_t, 5 * 1> const indices = {
+        7,
+        2,
+        5,
+        0,
+        9
+    };
+    std::array<matrix_float_t, 5 * 10> a = {};
+    std::array<matrix_float_t, 5 * 10> const expect = {
+        0, 0, 0, 0, 0, 0, 0, 1, 0, 0,
+        0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+    };
+    matrix::populate_by_indices(indices.data(), a.data(), 5, 10);
+    for (auto i = 0; i < 50; i++) {
+        assert_eq(expect.at(i), a.at(i), i);
+    }
 }

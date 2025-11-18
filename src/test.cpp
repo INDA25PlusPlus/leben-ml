@@ -11,6 +11,7 @@ int main() {
     test_matrix_mult();
     test_matrix_mult_add();
     test_matrix_mult_add_vec();
+    test_matrix_to_float();
     test_matrix_populate_by_indices();
 
     std::cout << "All tests succeeded!" << std::endl;

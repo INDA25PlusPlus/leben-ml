@@ -20,7 +20,7 @@ int main() {
         = stream.read_up_to_n(10000);
     auto const images = std::make_unique<matrix_float_t[]>(
         size * MNIST_IMAGE_SIZE);
-    matrix::to_float(
+    matrix::to_normalized_float(
         images_int.get()->data(), images.get(),
         size, MNIST_IMAGE_SIZE);
 
