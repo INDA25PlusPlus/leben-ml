@@ -102,3 +102,18 @@ void matrix::mult_add_vec(
         }
     }
 }
+
+void matrix::to_float(
+    uint8_t const *const a,
+    matrix_float_t *const b,
+    size_t const m,
+    size_t const n)
+{
+    std::size_t ij_ij = 0;
+    for (auto i = 0; i < m; i++) {
+        for (auto j = 0; j < n; j++) {
+            b[ij_ij] = a[ij_ij];
+            ij_ij++;
+        }
+    }
+}

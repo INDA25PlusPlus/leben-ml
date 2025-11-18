@@ -103,4 +103,23 @@ namespace matrix {
         size_t m,
         size_t n,
         size_t p);
+
+    /**
+     * B = float(A)
+     *
+     * Casts all elements of A to floats and stores them in B
+     *
+     * All matrix values are stored with the second index changing the fastest,
+     * e.g. A = {a_11, a_12, a_21, a_22}.
+     *
+     * @param a an m × n matrix
+     * @param b an m × n matrix
+     * @param m the number of rows of a and b
+     * @param n the number of columns of a and b
+     */
+    void to_float(
+        uint8_t const *a,
+        matrix_float_t *b,
+        size_t m,
+        size_t n);
 }
