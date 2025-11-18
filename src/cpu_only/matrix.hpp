@@ -11,7 +11,7 @@ namespace matrix {
     /**
      * C = AB
      *
-     * Assumes c is zero-initialized.
+     * Assumes C is zero-initialized.
      *
      * All matrix values are stored with the second index changing the fastest,
      * e.g. A = {a_11, a_12, a_21, a_22}.
@@ -34,7 +34,7 @@ namespace matrix {
     /**
      * C = A + B
      *
-     * Assumes c is zero-initialized.
+     * Assumes C is zero-initialized.
      *
      * All matrix values are stored with the second index changing the fastest,
      * e.g. A = {a_11, a_12, a_21, a_22}.
@@ -55,7 +55,7 @@ namespace matrix {
     /**
      * D = AB + C
      *
-     * d does not have to be initialized.
+     * D does not have to be initialized.
      *
      * All matrix values are stored with the second index changing the fastest,
      * e.g. A = {a_11, a_12, a_21, a_22}.
@@ -82,7 +82,7 @@ namespace matrix {
      *
      * Sets D to the product of A and B, and adds the row vector C to each row.
      *
-     * d does not have to be initialized.
+     * D does not have to be initialized.
      *
      * All matrix values are stored with the second index changing the fastest,
      * e.g. A = {a_11, a_12, a_21, a_22}.
@@ -120,6 +120,28 @@ namespace matrix {
     void to_float(
         uint8_t const *a,
         matrix_float_t *b,
+        size_t m,
+        size_t n);
+
+    /**
+     * A_ij = {1 if i == indices_j, else 0}
+     *
+     * Populate each row of A by zeros, except a one at the index given by
+     * indices.
+     *
+     * Assumes A is zero-initialized.
+     *
+     * All matrix values are stored with the second index changing the fastest,
+     * e.g. A = {a_11, a_12, a_21, a_22}.
+     *
+     * @param indices an m × 1 matrix
+     * @param a an m × n matrix
+     * @param m the number of rows of a
+     * @param n the number of columns of a
+     */
+    void populate_by_indices(
+        uint8_t const *indices,
+        matrix_float_t *a,
         size_t m,
         size_t n);
 }

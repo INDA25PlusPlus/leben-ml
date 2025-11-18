@@ -4,25 +4,23 @@
 
 #include "matrix.hpp"
 
-#include <cmath>
-
 void matrix::mult(
     matrix_float_t const *const a,
     matrix_float_t const *const b,
     matrix_float_t *const c,
-    std::size_t const m,
-    std::size_t const n,
-    std::size_t const p)
+    size_t const m,
+    size_t const n,
+    size_t const p)
 {
     // how grueling this is
     // the poor cpu so slow
     // unlike tensor cores
 
-    std::size_t ij_ij = 0;
+    size_t ij_ij = 0;
     for (auto i = 0; i < m; i++) {
-        std::size_t const ik_i0 = n * i;
+        size_t const ik_i0 = n * i;
         for (auto j = 0; j < p; j++) {
-            std::size_t const kj_0j = n * j;
+            size_t const kj_0j = n * j;
             for (auto k = 0; k < n; k++) {
                 matrix_float_t const a_ik = a[ik_i0 + k];
                 matrix_float_t const b_kj = b[kj_0j + k];
@@ -37,10 +35,10 @@ void matrix::add(
     matrix_float_t const *const a,
     matrix_float_t const *const b,
     matrix_float_t *const c,
-    std::size_t const m,
-    std::size_t const n)
+    size_t const m,
+    size_t const n)
 {
-    std::size_t ij_ij = 0;
+    size_t ij_ij = 0;
     for (auto i = 0; i < m; i++) {
         for (auto j = 0; j < n; j++) {
             c[ij_ij] = a[ij_ij] + b[ij_ij];
@@ -58,12 +56,12 @@ void matrix::mult_add(
     size_t const n,
     size_t const p)
 {
-    std::size_t ij_ij = 0;
+    size_t ij_ij = 0;
     for (auto i = 0; i < m; i++) {
-        std::size_t const ik_i0 = n * i;
+        size_t const ik_i0 = n * i;
         for (auto j = 0; j < p; j++) {
             matrix_float_t accum = 0;
-            std::size_t const kj_0j = n * j;
+            size_t const kj_0j = n * j;
             for (auto k = 0; k < n; k++) {
                 matrix_float_t const a_ik = a[ik_i0 + k];
                 matrix_float_t const b_kj = b[kj_0j + k];
@@ -85,12 +83,12 @@ void matrix::mult_add_vec(
     size_t const n,
     size_t const p)
 {
-    std::size_t ij_ij = 0;
+    size_t ij_ij = 0;
     for (auto i = 0; i < m; i++) {
-        std::size_t const ik_i0 = n * i;
+        size_t const ik_i0 = n * i;
         for (auto j = 0; j < p; j++) {
             matrix_float_t accum = 0;
-            std::size_t const kj_0j = n * j;
+            size_t const kj_0j = n * j;
             for (auto k = 0; k < n; k++) {
                 matrix_float_t const a_ik = a[ik_i0 + k];
                 matrix_float_t const b_kj = b[kj_0j + k];
@@ -109,11 +107,25 @@ void matrix::to_float(
     size_t const m,
     size_t const n)
 {
-    std::size_t ij_ij = 0;
+    size_t ij_ij = 0;
     for (auto i = 0; i < m; i++) {
         for (auto j = 0; j < n; j++) {
             b[ij_ij] = a[ij_ij];
             ij_ij++;
         }
+    }
+}
+
+void matrix::populate_by_indices(
+    uint8_t const *const indices,
+    matrix_float_t *const a,
+    size_t const m,
+    size_t const n)
+{
+    size_t ij_ij = 0;
+    for (auto i = 0; i < m; i++) {
+        size_t const index = indices[i];
+        a[ij_ij + index] = 1;
+        ij_ij += n;
     }
 }
