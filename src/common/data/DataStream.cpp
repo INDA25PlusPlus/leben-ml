@@ -5,7 +5,6 @@
 #include "DataStream.hpp"
 
 #include <iostream>
-#include <limits>
 
 
 DataStream::DataStream(
@@ -108,8 +107,4 @@ DataSet DataStream::read_up_to_n(const size_t n) {
         labels[size] = label;
     }
     return {size, std::move(images), std::move(labels)};
-}
-
-DataSet DataStream::read_all() {
-    return read_up_to_n(std::numeric_limits<size_t>::max());
 }

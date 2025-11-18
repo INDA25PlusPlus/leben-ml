@@ -22,6 +22,4 @@ public:
         const std::filesystem::path &labels_idx);
 
     DataSet read_up_to_n(size_t n);
-
-    DataSet read_all();
 };
