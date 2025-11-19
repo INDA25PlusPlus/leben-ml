@@ -205,19 +205,22 @@ namespace matrix {
         size_t n);
 
     /**
-     * A_ij = exp(A_ij)
+     * B_ij = exp(A_ij)
      *
-     * Applies the exponential function element-wise to A.
+     * Applies the exponential function element-wise to A and stores the result
+     * in B.
      *
      * All matrix values are stored with the second index changing the fastest,
      * e.g. A = {a_11, a_12, a_21, a_22}.
      *
      * @param a an m × n matrix
+     * @param b an m × n matrix
      * @param m the number of rows
      * @param n the number of columns
      */
     void exp(
-        matrix_float_t *a,
+        matrix_float_t const *a,
+        matrix_float_t *b,
         size_t m,
         size_t n);
 

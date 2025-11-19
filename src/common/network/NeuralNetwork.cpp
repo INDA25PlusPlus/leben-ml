@@ -8,17 +8,36 @@
 #include "../../cpu_only/matrix.hpp"
 
 
+// skip to line 42 if you have boilerplate phobia like me
 NeuralNetwork::NeuralNetwork()
   : input_weights(
-        std::make_unique<std::array<matrix_float_t, INPUT_WEIGHTS_COUNT>>()),
+        std::make_unique<
+            std::array<matrix_float_t, INPUT_WEIGHTS_COUNT>>()),
     input_biases(
-        std::make_unique<std::array<matrix_float_t, HIDDEN_LAYER_SIZE>>()),
+        std::make_unique<
+            std::array<matrix_float_t, HIDDEN_LAYER_SIZE>>()),
+
     weights(
-        std::make_unique<std::array<
-            std::array<matrix_float_t, WEIGHTS_COUNT>, HIDDEN_LAYERS>>()),
+        std::make_unique<
+            std::array<
+                std::array<matrix_float_t, WEIGHTS_COUNT>,
+                HIDDEN_LAYERS>>()),
     biases(
-        std::make_unique<std::array<
-            std::array<matrix_float_t, HIDDEN_LAYER_SIZE>, HIDDEN_LAYERS>>())
+        std::make_unique<
+            std::array<
+                std::array<matrix_float_t, HIDDEN_LAYER_SIZE>,
+                HIDDEN_LAYERS>>()),
+
+    pre_cache(
+        std::make_unique<
+            std::array<
+                std::array<matrix_float_t, BATCH_TENSOR_SIZE>,
+                HIDDEN_LAYERS + 1>>()),
+    post_cache(
+        std::make_unique<
+            std::array<
+                std::array<matrix_float_t, BATCH_TENSOR_SIZE>,
+                HIDDEN_LAYERS + 1>>())
 {
     constexpr matrix_float_t INPUT_SCALING = 1.0 / INPUT_LAYER_SIZE;
     input_weights->fill(INPUT_SCALING);
@@ -30,34 +49,47 @@ NeuralNetwork::NeuralNetwork()
 
 void NeuralNetwork::forward_propagate(
     matrix_float_t const *const in,
-    matrix_float_t *const out,
-    size_t const m
+    size_t const input_count
 ) const {
-    auto const accum = std::make_unique<matrix_float_t[]>(
-        m * HIDDEN_LAYER_SIZE);
-    auto a = accum.get();
-    auto b = out;
-
-    // input layer
+    // first layer
     matrix::mult_add_vec(
-        in, input_weights->data(), input_biases->data(), b,
-        m, INPUT_LAYER_SIZE, HIDDEN_LAYER_SIZE);
+        in,
+        input_weights->data(),
+        input_biases->data(),
+        pre_cache->at(0).data(),
+        input_count, INPUT_LAYER_SIZE, HIDDEN_LAYER_SIZE);
+    evaluation::leaky_relu(
+        pre_cache->at(0).data(),
+        post_cache->at(0).data(),
+        input_count, HIDDEN_LAYER_SIZE);
 
     // hidden layers
     auto swapped = false;
     for (auto i = 0; i < HIDDEN_LAYERS; i++) {
-        evaluation::leaky_relu(b, m, HIDDEN_LAYER_SIZE);
-
-        std::swap(a, b);
-        swapped = !swapped;
-
         matrix::mult_add_vec(
-            a, weights->at(i).data(), biases->at(i).data(), b,
-            m, HIDDEN_LAYER_SIZE, HIDDEN_LAYER_SIZE);
+            post_cache->at(i).data(),
+            weights->at(i).data(),
+            biases->at(i).data(),
+            pre_cache->at(i + 1).data(),
+            input_count, HIDDEN_LAYER_SIZE, HIDDEN_LAYER_SIZE);
+
+        if (i < HIDDEN_LAYERS - 1) {
+            evaluation::leaky_relu(
+                pre_cache->at(i + 1).data(),
+                post_cache->at(i + 1).data(),
+                input_count, HIDDEN_LAYER_SIZE);
+        } else {
+            // output layer
+
+            // ignore all outputs of the last layer except 0-9
+            evaluation::softmax(
+                pre_cache->at(i + 1).data(),
+                post_cache->at(i + 1).data(),
+                input_count, HIDDEN_LAYER_SIZE, OUTPUT_LAYER_SIZE);
+        }
     }
-    // ignore all outputs of the last layer except 0-9
-    evaluation::softmax(b, m, HIDDEN_LAYER_SIZE, OUTPUT_LAYER_SIZE);
-    if (swapped) {
-        matrix::copy(accum.get(), out, m, HIDDEN_LAYER_SIZE);
-    }
+}
+
+matrix_float_t* NeuralNetwork::output() const {
+    return post_cache->at(HIDDEN_LAYERS).data();
 }

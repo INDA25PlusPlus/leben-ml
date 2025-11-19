@@ -186,14 +186,15 @@ void matrix::copy(
 }
 
 void matrix::exp(
-    matrix_float_t *const a,
+    matrix_float_t const *const a,
+    matrix_float_t *const b,
     size_t const m,
     size_t const n)
 {
     size_t ij = 0;
     for (auto i = 0; i < m; i++) {
         for (auto j = 0; j < n; j++) {
-            a[ij] = std::exp(a[ij]);
+            b[ij] = std::exp(a[ij]);
             ij++;
         }
     }
@@ -214,6 +215,9 @@ void matrix::normalize_rows(
             sum += a[index];
             index++;
         }
+
+        // if sum == 0, set scale to 1
+        sum += (sum == 0);
 
         matrix_float_t const scale = 1.0 / sum;
 

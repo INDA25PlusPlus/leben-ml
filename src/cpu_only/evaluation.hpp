@@ -30,34 +30,42 @@ namespace evaluation {
         size_t n);
 
     /**
-     * Applies the leaky ReLU function to A in place.
+     * B_ij = ReLU(A_ij)
+     *
+     * Applies the leaky ReLU function element-wise to A and stores the result
+     * in B.
      *
      * All matrix values are stored with the second index changing the fastest,
      * e.g. A = {a_11, a_12, a_21, a_22}.
      *
      * @param a an m × n matrix
+     * @param b an m × n matrix
      * @param m the number of rows
      * @param n the number of columns
      */
     void leaky_relu(
-        matrix_float_t *a,
+        matrix_float_t const *a,
+        matrix_float_t *b,
         size_t m,
         size_t n);
 
     /**
-     * Applies the softmax function to the first N columns of A in place, row by
-     * row.
+     * Applies the softmax function row-wise to the first N columns of A and
+     * stores the result in B.
      *
      * All matrix values are stored with the second index changing the fastest,
      * e.g. A = {a_11, a_12, a_21, a_22}.
      *
      * @param a an m × n matrix
+     * @param b an m × n matrix
      * @param m the number of rows
      * @param n the number of columns
-     * @param N the number of columns to perform the calculation on
+     * @param N the number of columns to perform the calculation on. Must be <=
+     *        n.
      */
     void softmax(
-        matrix_float_t *a,
+        matrix_float_t const *a,
+        matrix_float_t *b,
         size_t m,
         size_t n,
         size_t N);

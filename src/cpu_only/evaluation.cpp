@@ -26,22 +26,25 @@ void evaluation::eval_function(
 }
 
 void evaluation::leaky_relu(
-    matrix_float_t *const a,
+    matrix_float_t const *const a,
+    matrix_float_t *const b,
     size_t const m,
     size_t const n)
 {
     for (auto ij = 0; ij < m * n; ij++) {
         auto const z = a[ij];
-        a[ij] = std::max(LEAKY_PARAMETER * z, z);
+        // z if z >= 0 else alpha * z
+        b[ij] = std::max(LEAKY_PARAMETER * z, z);
     }
 }
 
 void evaluation::softmax(
-    matrix_float_t *const a,
+    matrix_float_t const *const a,
+    matrix_float_t *const b,
     size_t const m,
     size_t const n,
     size_t const N)
 {
-    matrix::exp(a, m, n);
-    matrix::normalize_rows(a, m, n, N);
+    matrix::exp(a, b, m, n);
+    matrix::normalize_rows(b, m, n, N);
 }
