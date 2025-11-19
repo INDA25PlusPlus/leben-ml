@@ -18,7 +18,15 @@ NeuralNetwork::NeuralNetwork()
             std::array<matrix_float_t, WEIGHTS_COUNT>, HIDDEN_LAYERS>>()),
     biases(
         std::make_unique<std::array<
-            std::array<matrix_float_t, HIDDEN_LAYER_SIZE>, HIDDEN_LAYERS>>()) {}
+            std::array<matrix_float_t, HIDDEN_LAYER_SIZE>, HIDDEN_LAYERS>>())
+{
+    constexpr matrix_float_t INPUT_SCALING = 1.0 / INPUT_LAYER_SIZE;
+    input_weights->fill(INPUT_SCALING);
+    for (auto i = 0; i < HIDDEN_LAYERS; i++) {
+        constexpr matrix_float_t HIDDEN_SCALING = 1.0 / HIDDEN_LAYER_SIZE;
+        weights->at(i).fill(HIDDEN_SCALING);
+    }
+}
 
 void NeuralNetwork::forward_propagate(
     matrix_float_t const *const in,
