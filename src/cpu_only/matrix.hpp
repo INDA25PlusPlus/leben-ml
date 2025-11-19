@@ -105,6 +105,25 @@ namespace matrix {
         size_t p);
 
     /**
+     * B = A
+     *
+     * Copies the elements of A into B.
+     *
+     * All matrix values are stored with the second index changing the fastest,
+     * e.g. A = {a_11, a_12, a_21, a_22}.
+     *
+     * @param a an m × n matrix
+     * @param b an m × n matrix
+     * @param m the number of rows
+     * @param n the number of columns
+     */
+    void copy(
+        matrix_float_t const *a,
+        matrix_float_t *b,
+        std::size_t m,
+        std::size_t n);
+
+    /**
      * B = float(A) / 255.0
      *
      * Casts all elements of A to floats and stores them in B
