@@ -6,17 +6,8 @@
 
 #include <cmath>
 
+#include "matrix.hpp"
 
-void evaluation::activation_function(
-    matrix_float_t *const a,
-    size_t const m,
-    size_t const n)
-{
-    for (auto ij = 0; ij < m * n; ij++) {
-        auto const z = a[ij];
-        a[ij] = std::max(LEAKY_PARAMETER * z, z);
-    }
-}
 
 void evaluation::eval_function(
     matrix_float_t const *const a,
@@ -35,4 +26,24 @@ void evaluation::eval_function(
             ij++;
         }
     }
+}
+
+void evaluation::leaky_relu(
+    matrix_float_t *const a,
+    size_t const m,
+    size_t const n)
+{
+    for (auto ij = 0; ij < m * n; ij++) {
+        auto const z = a[ij];
+        a[ij] = std::max(LEAKY_PARAMETER * z, z);
+    }
+}
+
+void evaluation::softmax(
+    matrix_float_t *const a,
+    size_t const m,
+    size_t const n)
+{
+    matrix::exp(a, m, n);
+    matrix::normalize_rows(a, m, n);
 }

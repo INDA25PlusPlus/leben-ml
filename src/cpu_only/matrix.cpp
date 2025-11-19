@@ -4,6 +4,8 @@
 
 #include "matrix.hpp"
 
+#include <cmath>
+
 void matrix::mult(
     matrix_float_t const *const a,
     matrix_float_t const *const b,
@@ -118,6 +120,42 @@ void matrix::copy(
         for (auto j = 0; j < n; j++) {
             b[ij_ij] = a[ij_ij];
             ij_ij++;
+        }
+    }
+}
+
+void matrix::exp(
+    matrix_float_t *const a,
+    size_t const m,
+    size_t const n)
+{
+    size_t ij = 0;
+    for (auto i = 0; i < m; i++) {
+        for (auto j = 0; j < n; j++) {
+            a[ij] = std::exp(a[ij]);
+            ij++;
+        }
+    }
+}
+
+void matrix::normalize_rows(
+    matrix_float_t *const a,
+    size_t const m,
+    size_t const n)
+{
+    size_t ij = 0;
+    for (auto i = 0; i < m; i++) {
+        size_t const index = ij;
+        matrix_float_t sum = 0;
+        for (auto j = 0; j < n; j++) {
+            sum += a[ij];
+            ij++;
+        }
+        matrix_float_t const scale = 1.0 / sum;
+        ij = index;
+        for (auto j = 0; j < n; j++) {
+            a[ij] *= scale;
+            ij++;
         }
     }
 }
