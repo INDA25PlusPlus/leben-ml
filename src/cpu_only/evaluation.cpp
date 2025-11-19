@@ -14,7 +14,7 @@ void evaluation::activation_function(
 {
     for (auto ij = 0; ij < m * n; ij++) {
         auto const z = a[ij];
-        a[ij] = std::max(0.0f, z) + LEAKY_PARAMETER * z;
+        a[ij] = std::max(LEAKY_PARAMETER * z, z);
     }
 }
 
