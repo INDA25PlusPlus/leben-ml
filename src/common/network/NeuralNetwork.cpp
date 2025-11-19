@@ -4,11 +4,13 @@
 
 #include "NeuralNetwork.hpp"
 
+#include <assert.h>
+
 #include "../../cpu_only/evaluation.hpp"
 #include "../../cpu_only/matrix.hpp"
 
 
-// skip to line 42 if you have boilerplate phobia like me
+// skip to line 45 if you have boilerplate phobia like me
 NeuralNetwork::NeuralNetwork()
   : input_weights(
         std::make_unique<
@@ -27,6 +29,9 @@ NeuralNetwork::NeuralNetwork()
             std::array<
                 std::array<matrix_float_t, HIDDEN_LAYER_SIZE>,
                 HIDDEN_LAYERS>>()),
+
+    input_layer(nullptr),
+    input_count(0),
 
     pre_cache(
         std::make_unique<
@@ -47,13 +52,24 @@ NeuralNetwork::NeuralNetwork()
     }
 }
 
-void NeuralNetwork::forward_propagate(
-    matrix_float_t const *const in,
-    size_t const input_count
-) const {
+void NeuralNetwork::set_input(
+    matrix_float_t *const input_layer,
+    size_t const input_count)
+{
+    this->input_layer = input_layer;
+    this->input_count = input_count;
+}
+
+NeuralNetwork::LayerBatchTensor const& NeuralNetwork::output() const {
+    return post_cache->at(HIDDEN_LAYERS);
+}
+
+void NeuralNetwork::forward_propagate() const {
+    assert(input_layer != nullptr || input_count == 0);
+
     // first layer
     matrix::mult_add_vec(
-        in,
+        input_layer,
         input_weights->data(),
         input_biases->data(),
         pre_cache->at(0).data(),
@@ -64,7 +80,6 @@ void NeuralNetwork::forward_propagate(
         input_count, HIDDEN_LAYER_SIZE);
 
     // hidden layers
-    auto swapped = false;
     for (auto i = 0; i < HIDDEN_LAYERS; i++) {
         matrix::mult_add_vec(
             post_cache->at(i).data(),
@@ -88,8 +103,4 @@ void NeuralNetwork::forward_propagate(
                 input_count, HIDDEN_LAYER_SIZE, OUTPUT_LAYER_SIZE);
         }
     }
-}
-
-matrix_float_t* NeuralNetwork::output() const {
-    return post_cache->at(HIDDEN_LAYERS).data();
 }

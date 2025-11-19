@@ -24,13 +24,14 @@ int main() {
         images_int.get()->data(), images.get(),
         size, MNIST_IMAGE_SIZE);
 
-    auto const network = NeuralNetwork();
-    network.forward_propagate(images.get(), size);
+    auto network = NeuralNetwork();
+    network.set_input(images.get(), size);
+    network.forward_propagate();
     auto const prediction = network.output();
 
     auto const eval = std::make_unique<matrix_float_t[]>(size);
     evaluation::eval_function(
-        prediction, labels.get(), eval.get(),
+        prediction.data(), labels.get(), eval.get(),
         size, HIDDEN_LAYER_SIZE);
 
     for (auto i = 0; i < size; i++) {

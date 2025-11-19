@@ -27,8 +27,13 @@ class NeuralNetwork {
     std::unique_ptr<std::array<LayerMatrix, HIDDEN_LAYERS>> weights;
     std::unique_ptr<std::array<LayerVector, HIDDEN_LAYERS>> biases;
 
-    // cached pre- and post-activation neuron values for the hidden layers and
-    // the output layer
+    matrix_float_t *input_layer;
+    size_t input_count;
+
+    /**
+     * Cached pre- and post-activation neuron values for the hidden layers and
+     * the output layer.
+     */
     std::unique_ptr<std::array<LayerBatchTensor, HIDDEN_LAYERS + 1>> pre_cache;
     std::unique_ptr<std::array<LayerBatchTensor, HIDDEN_LAYERS + 1>> post_cache;
 
@@ -36,19 +41,18 @@ public:
     NeuralNetwork();
 
     /**
-     * Uses the current parameters to predict a batch of l outputs based on l
-     * inputs.
+     * Sets a batch of inputs to the neural network. The caller must ensure that
+     * input_layer lives until the next call of set_input, or outlives this
+     * object.
      *
      * All matrix values are stored with the second index changing the fastest,
      * e.g. A = {a_11, a_12, a_21, a_22}.
      *
-     * @param in an m × n matrix, with m = BATCH_SIZE and n = INPUT_LAYER_SIZE
-     * @param input_count the number of inputs. Must be <= BATCH_SIZE
+     * @param input_layer an m × n matrix, with m = BATCH_SIZE and n =
+     *        INPUT_LAYER_SIZE.
+     * @param input_count the number of inputs. Must be <= BATCH_SIZE.
      */
-    void forward_propagate(
-        matrix_float_t const *in,
-        size_t input_count
-    ) const;
+    void set_input(matrix_float_t *input_layer, size_t input_count);
 
     /**
      * Returns the output of the latest forward propagation run. Only the first
@@ -59,7 +63,15 @@ public:
      * e.g. A = {a_11, a_12, a_21, a_22}.
      *
      * @return an m × n matrix, with m = BATCH_SIZE and n = INPUT_LAYER_SIZE.
-     *         The pointer's lifetime is the same as this object.
      */
-    matrix_float_t* output() const;
+    LayerBatchTensor const& output() const;
+
+    /**
+     * Uses the current parameters to predict a batch of outputs based on the
+     * current inputs.
+     *
+     * All matrix values are stored with the second index changing the fastest,
+     * e.g. A = {a_11, a_12, a_21, a_22}.
+     */
+    void forward_propagate() const;
 };
