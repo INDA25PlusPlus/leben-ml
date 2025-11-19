@@ -42,12 +42,8 @@ void matrix::add(
     size_t const m,
     size_t const n)
 {
-    size_t ij_ij = 0;
-    for (auto i = 0; i < m; i++) {
-        for (auto j = 0; j < n; j++) {
-            c[ij_ij] = a[ij_ij] + b[ij_ij];
-            ij_ij++;
-        }
+    for (auto ij = 0; ij < m * n; ij++) {
+        c[ij] = a[ij] + b[ij];
     }
 }
 
@@ -106,6 +102,71 @@ void matrix::mult_add_vec(
             ij_ij++;
         }
         ik_i0 += n;
+    }
+}
+
+void matrix::mult_scaled_first_t(
+    matrix_float_t const *const a,
+    matrix_float_t const *const b,
+    matrix_float_t const s,
+    matrix_float_t *const c,
+    size_t const m,
+    size_t const n,
+    size_t const p)
+{
+    size_t ij_ij = 0;
+    for (auto i = 0; i < m; i++) {
+        for (auto j = 0; j < p; j++) {
+            matrix_float_t accum = 0;
+            size_t ki_k0 = 0; // index of k0 = m * k;
+            size_t kj_k0 = 0; // index of k0 = p * k
+            for (auto k = 0; k < n; k++) {
+                matrix_float_t const a_ki = a[ki_k0 + i];
+                matrix_float_t const b_kj = b[kj_k0 + j];
+                accum += a_ki * b_kj;
+                ki_k0 += m;
+                kj_k0 += p;
+            }
+            c[ij_ij] = accum * s;
+            ij_ij++;
+        }
+    }
+}
+
+void matrix::mult_second_t(
+    matrix_float_t const *const a,
+    matrix_float_t const *const b,
+    matrix_float_t *const c,
+    size_t const m,
+    size_t const n,
+    size_t const p)
+{
+    size_t ij_ij = 0;
+    size_t ik_i0 = 0; // index of i0 = n * i
+    for (auto i = 0; i < m; i++) {
+        size_t jk_j0 = 0; // index of j0 = n * j
+        for (auto j = 0; j < p; j++) {
+            for (auto k = 0; k < n; k++) {
+                matrix_float_t const a_ik = a[ik_i0 + k];
+                matrix_float_t const b_jk = b[jk_j0 + k];
+                c[ij_ij] += a_ik * b_jk;
+            }
+            ij_ij++;
+            jk_j0 += n;
+        }
+        ik_i0 += n;
+    }
+}
+
+void matrix::hadamard(
+    matrix_float_t const *const a,
+    matrix_float_t const *const b,
+    matrix_float_t *const c,
+    size_t const m,
+    size_t const n)
+{
+    for (auto ij = 0; ij < m * n; ij++) {
+        c[ij] = a[ij] * b[ij];
     }
 }
 
