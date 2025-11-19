@@ -13,7 +13,8 @@ void evaluation::activation_function(
     size_t const n)
 {
     for (auto ij = 0; ij < m * n; ij++) {
-        a[ij] = std::tanh(a[ij]);
+        auto const z = a[ij];
+        a[ij] = std::max(0.0f, z) + LEAKY_PARAMETER * z;
     }
 }
 
