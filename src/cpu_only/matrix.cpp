@@ -141,22 +141,28 @@ void matrix::exp(
 void matrix::normalize_rows(
     matrix_float_t *const a,
     size_t const m,
-    size_t const n)
+    size_t const n,
+    size_t const N)
 {
     size_t ij = 0;
     for (auto i = 0; i < m; i++) {
-        size_t const index = ij;
         matrix_float_t sum = 0;
-        for (auto j = 0; j < n; j++) {
-            sum += a[ij];
-            ij++;
+
+        size_t index = ij;
+        for (auto j = 0; j < N; j++) {
+            sum += a[index];
+            index++;
         }
+
         matrix_float_t const scale = 1.0 / sum;
-        ij = index;
-        for (auto j = 0; j < n; j++) {
-            a[ij] *= scale;
-            ij++;
+
+        index = ij;
+        for (auto j = 0; j < N; j++) {
+            a[index] *= scale;
+            index++;
         }
+
+        ij += n;
     }
 }
 

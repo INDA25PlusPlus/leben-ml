@@ -29,19 +29,17 @@ int main() {
         size * HIDDEN_LAYER_SIZE);
     network.forward_propagate(images.get(), prediction.get(), size);
 
-    auto const expect = std::make_unique<matrix_float_t[]>(
-        size * MNIST_IMAGE_SIZE);
-    matrix::populate_by_indices(
-        labels.get(), expect.get(),
-        size, HIDDEN_LAYER_SIZE);
-
     auto const eval = std::make_unique<matrix_float_t[]>(size);
     evaluation::eval_function(
-        prediction.get(), expect.get(), eval.get(),
+        prediction.get(), labels.get(), eval.get(),
         size, HIDDEN_LAYER_SIZE);
 
     for (auto i = 0; i < size; i++) {
-        std::cout << eval[i] << std::endl;
+        for (auto j = 0; j < 10; j++) {
+            auto p = prediction.get()[i * HIDDEN_LAYER_SIZE + j];
+            std::cout << p << " ";
+        }
+        std::cout << std::endl << eval[i] << std::endl;
     }
     return 0;
 }

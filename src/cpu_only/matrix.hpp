@@ -143,7 +143,8 @@ namespace matrix {
     /**
      * A_i = norm(A_i)
      *
-     * Normalizes the rows of A, so that sum_j A_ij = 1 for all i.
+     * Normalizes the first N columns of the rows of A, so that sum_j A_ij = 1
+     * for all i.
      *
      * All matrix values are stored with the second index changing the fastest,
      * e.g. A = {a_11, a_12, a_21, a_22}.
@@ -151,11 +152,13 @@ namespace matrix {
      * @param a an m × n matrix
      * @param m the number of rows
      * @param n the number of columns
+     * @param N the number of columns to perform the calculation on
      */
     void normalize_rows(
         matrix_float_t *a,
         size_t m,
-        size_t n);
+        size_t n,
+        size_t N);
 
     /**
      * B = float(A) / 255.0

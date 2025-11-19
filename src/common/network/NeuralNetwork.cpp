@@ -55,7 +55,8 @@ void NeuralNetwork::forward_propagate(
             a, weights->at(i).data(), biases->at(i).data(), b,
             m, HIDDEN_LAYER_SIZE, HIDDEN_LAYER_SIZE);
     }
-    evaluation::softmax(b, m, HIDDEN_LAYER_SIZE);
+    // ignore all outputs of the last layer except 0-9
+    evaluation::softmax(b, m, HIDDEN_LAYER_SIZE, OUTPUT_LAYER_SIZE);
     if (swapped) {
         matrix::copy(accum.get(), out, m, HIDDEN_LAYER_SIZE);
     }

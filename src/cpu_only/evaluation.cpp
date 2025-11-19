@@ -11,20 +11,17 @@
 
 void evaluation::eval_function(
     matrix_float_t const *const a,
-    matrix_float_t const *const expect,
+    uint8_t const *const correct_index,
     matrix_float_t *const result,
     size_t const m,
     size_t const n)
 {
     size_t ij = 0;
     for (auto i = 0; i < m; i++) {
-        for (auto j = 0; j < n; j++) {
-            auto const a_ij = a[ij];
-            auto const expect_ij = expect[ij];
-            auto const delta = a_ij - expect_ij;
-            result[i] += delta * delta;
-            ij++;
-        }
+        size_t const index = correct_index[i];
+        matrix_float_t const a_ij = a[ij + index];
+        result[i] = std::log(a_ij);
+        ij += n;
     }
 }
 
@@ -42,8 +39,9 @@ void evaluation::leaky_relu(
 void evaluation::softmax(
     matrix_float_t *const a,
     size_t const m,
-    size_t const n)
+    size_t const n,
+    size_t const N)
 {
     matrix::exp(a, m, n);
-    matrix::normalize_rows(a, m, n);
+    matrix::normalize_rows(a, m, n, N);
 }
