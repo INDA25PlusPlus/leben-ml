@@ -85,33 +85,26 @@ void NeuralNetwork::forward_propagate() const {
         input_biases->data(),
         pre_cache->at(0).data(),
         input_count, INPUT_LAYER_SIZE, HIDDEN_LAYER_SIZE);
-    evaluation::leaky_relu(
-        pre_cache->at(0).data(),
-        post_cache->at(0).data(),
-        input_count, HIDDEN_LAYER_SIZE);
 
     // hidden layers
     for (auto i = 0; i < HIDDEN_LAYERS; i++) {
+        evaluation::leaky_relu(
+            pre_cache->at(i).data(),
+            post_cache->at(i).data(),
+            input_count, HIDDEN_LAYER_SIZE);
+
         matrix::mult_add_vec(
             post_cache->at(i).data(),
             weights->at(i).data(),
             biases->at(i).data(),
             pre_cache->at(i + 1).data(),
             input_count, HIDDEN_LAYER_SIZE, HIDDEN_LAYER_SIZE);
-
-        if (i < HIDDEN_LAYERS - 1) {
-            evaluation::leaky_relu(
-                pre_cache->at(i + 1).data(),
-                post_cache->at(i + 1).data(),
-                input_count, HIDDEN_LAYER_SIZE);
-        } else {
-            // output layer
-
-            // ignore all outputs of the last layer except 0-9
-            evaluation::softmax(
-                pre_cache->at(i + 1).data(),
-                post_cache->at(i + 1).data(),
-                input_count, HIDDEN_LAYER_SIZE, OUTPUT_LAYER_SIZE);
-        }
     }
+
+    // output layer
+    evaluation::softmax(
+        pre_cache->at(HIDDEN_LAYERS).data(),
+        post_cache->at(HIDDEN_LAYERS).data(),
+        // ignore all outputs of the last layer except 0-9
+        input_count, HIDDEN_LAYER_SIZE, OUTPUT_LAYER_SIZE);
 }
