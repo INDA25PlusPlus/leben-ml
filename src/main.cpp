@@ -17,7 +17,7 @@ int main() {
         "dataset/t10k-labels-idx1-ubyte");
 
     auto const [size, images_int, labels]
-        = stream.read_up_to_n(10);
+        = stream.read_up_to_n(100);
     auto const images = std::make_unique<matrix_float_t[]>(
         size * MNIST_IMAGE_SIZE);
     matrix::to_normalized_float(
@@ -25,22 +25,31 @@ int main() {
         size, MNIST_IMAGE_SIZE);
 
     auto network = NeuralNetwork();
-    network.set_input(images.get(), size);
-    network.forward_propagate();
-    auto const prediction = network.output();
+    for (auto i = 0; i < 10; i++) {
+        auto const batch_images = &images.get()[i * 10 * MNIST_IMAGE_SIZE];
+        auto const batch_labels = &labels.get()[i * 10];
 
-    auto const eval = std::make_unique<matrix_float_t[]>(size);
-    evaluation::eval_function(
-        prediction.data(), labels.get(), eval.get(),
-        size, HIDDEN_LAYER_SIZE);
+        network.set_input(batch_images, 10);
+        network.forward_propagate();
+        network.back_propagate(0.01, batch_labels);
 
-    for (auto i = 0; i < size; i++) {
+        auto &prediction = network.output();
+
+        auto const eval = std::make_unique<matrix_float_t[]>(10);
+        evaluation::eval_function(
+            prediction.data(), batch_labels, eval.get(),
+            10, HIDDEN_LAYER_SIZE);
+
         for (auto j = 0; j < 10; j++) {
-            auto const p = prediction[i * HIDDEN_LAYER_SIZE + j];
-            std::cout << p << " ";
+            // for (auto j = 0; j < 10; j++) {
+            //     auto const p = prediction[i * HIDDEN_LAYER_SIZE + j];
+            //     std::cout << p << " ";
+            // }
+            // uint32_t const label = labels.get()[j];
+            // std::cout << std::endl << label << " " << eval[i] << std::endl;
+            std::cout << eval[i] << " ";
         }
-        uint32_t const label = labels.get()[i];
-        std::cout << std::endl << label << " " << eval[i] << std::endl;
+        std::cout << std::endl;
     }
     return 0;
 }

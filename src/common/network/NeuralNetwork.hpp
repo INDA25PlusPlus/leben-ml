@@ -37,6 +37,11 @@ class NeuralNetwork {
     std::unique_ptr<std::array<LayerBatchTensor, HIDDEN_LAYERS + 1>> pre_cache;
     std::unique_ptr<std::array<LayerBatchTensor, HIDDEN_LAYERS + 1>> post_cache;
 
+    std::unique_ptr<LayerBatchTensor> delta_cache;
+    std::unique_ptr<LayerBatchTensor> delta_accum;
+    std::unique_ptr<LayerMatrix> grad_cache;
+    std::unique_ptr<InputLayerMatrix> input_grad_cache;
+
 public:
     NeuralNetwork();
 
@@ -62,7 +67,7 @@ public:
      * All matrix values are stored with the second index changing the fastest,
      * e.g. A = {a_11, a_12, a_21, a_22}.
      *
-     * @return an m × n matrix, with m = BATCH_SIZE and n = INPUT_LAYER_SIZE.
+     * @return an m × n matrix, with m = BATCH_SIZE and n = HIDDEN_LAYER_SIZE.
      */
     LayerBatchTensor const& output() const;
 
@@ -74,4 +79,21 @@ public:
      * e.g. A = {a_11, a_12, a_21, a_22}.
      */
     void forward_propagate() const;
+
+    /**
+     * Uses the current parameters and cached values to perform back
+     * propagation, updating the parameters by gradient descent.
+     *
+     * The caller must ensure that set_input has not been called since
+     * forward_propagate was called latest.
+     *
+     * @param step_size a factor scaling how fast the parameters change
+     * @param correct_index an m × 1 matrix, where m = input_count with each
+     *        entry corresponding to the correct index of the output neuron with
+     *        expected value 1
+     */
+    void back_propagate(
+        matrix_float_t step_size,
+        uint8_t const *correct_index)
+    const;
 };

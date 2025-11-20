@@ -4,6 +4,7 @@
 
 #include "matrix.hpp"
 
+#include <assert.h>
 #include <cmath>
 
 void matrix::mult(
@@ -95,9 +96,15 @@ void matrix::mult_add_vec(
                 matrix_float_t const a_ik = a[ik_i0 + k];
                 matrix_float_t const b_kj = b[kj_k0 + j];
                 accum += a_ik * b_kj;
+                assert(!std::isnan(accum));
+                assert(!std::isinf(accum));
                 kj_k0 += p;
             }
             matrix_float_t const c_j = c[j];
+            assert(!std::isnan(accum));
+            assert(!std::isinf(accum));
+            assert(!std::isnan(c_j));
+            assert(!std::isinf(c_j));
             d[ij_ij] = accum + c_j;
             ij_ij++;
         }
@@ -194,7 +201,10 @@ void matrix::exp(
     size_t ij = 0;
     for (auto i = 0; i < m; i++) {
         for (auto j = 0; j < n; j++) {
-            b[ij] = std::exp(a[ij]);
+            auto const a_ij = a[ij];
+            b[ij] = std::exp(a_ij);
+            assert(!std::isnan(b[ij]));
+            assert(b[ij] != 0);
             ij++;
         }
     }
@@ -213,6 +223,7 @@ void matrix::normalize_rows(
         size_t index = ij;
         for (auto j = 0; j < N; j++) {
             sum += a[index];
+            assert(a[index] != 0);
             index++;
         }
 
@@ -220,10 +231,14 @@ void matrix::normalize_rows(
         sum += (sum == 0);
 
         matrix_float_t const scale = 1.0 / sum;
+        assert(!std::isnan(scale));
+        assert(!std::isinf(scale));
 
         index = ij;
         for (auto j = 0; j < N; j++) {
             a[index] *= scale;
+            assert(!std::isnan(a[index]));
+            assert(!std::isinf(a[index]));
             index++;
         }
 
