@@ -5,12 +5,14 @@
 #include "NeuralNetwork.hpp"
 
 #include <assert.h>
+#include <random>
 
+#include "initialization.hpp"
 #include "../../cpu_only/evaluation.hpp"
 #include "../../cpu_only/matrix.hpp"
 
 
-// skip to line 45 if you have boilerplate phobia like me
+// skip to line 49 if you have boilerplate phobia like me
 NeuralNetwork::NeuralNetwork()
   : input_weights(
         std::make_unique<
@@ -44,11 +46,20 @@ NeuralNetwork::NeuralNetwork()
                 std::array<matrix_float_t, BATCH_TENSOR_SIZE>,
                 HIDDEN_LAYERS + 1>>())
 {
-    constexpr matrix_float_t INPUT_SCALING = 1.0 / INPUT_LAYER_SIZE;
-    input_weights->fill(INPUT_SCALING);
+    auto input_dist = std::normal_distribution<matrix_float_t>(
+        0, std::sqrt(2.0 / INPUT_LAYER_SIZE));
+    initialization::kaiming(
+        input_weights->data(),
+        input_dist,
+        INPUT_LAYER_SIZE, HIDDEN_LAYER_SIZE);
+
+    auto hidden_dist = std::normal_distribution<matrix_float_t>(
+        0, std::sqrt(2.0 / HIDDEN_LAYER_SIZE));
     for (auto i = 0; i < HIDDEN_LAYERS; i++) {
-        constexpr matrix_float_t HIDDEN_SCALING = 1.0 / HIDDEN_LAYER_SIZE;
-        weights->at(i).fill(HIDDEN_SCALING);
+        initialization::kaiming(
+            weights->at(i).data(),
+            hidden_dist,
+            HIDDEN_LAYER_SIZE, HIDDEN_LAYER_SIZE);
     }
 }
 
