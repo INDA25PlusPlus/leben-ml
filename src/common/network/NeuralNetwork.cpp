@@ -13,7 +13,6 @@
 #include "../../cpu_only/matrix.hpp"
 
 
-// skip to line 59 if you have boilerplate phobia like me
 NeuralNetwork::NeuralNetwork()
   : input_weights(
         std::make_unique<
@@ -53,10 +52,17 @@ NeuralNetwork::NeuralNetwork()
     delta_accum(
         std::make_unique<
             std::array<matrix_float_t, BATCH_TENSOR_SIZE>>()),
-    grad_cache(
+
+    // biases_grad_cache(
+    //     std::make_unique<
+    //         std::array<matrix_float_t, HIDDEN_LAYER_SIZE>>()),
+    weight_grad_cache(
         std::make_unique<
             std::array<matrix_float_t, WEIGHTS_COUNT>>()),
-    input_grad_cache(
+    // input_biases_grad_cache(
+    //     std::make_unique<
+    //         std::array<matrix_float_t, HIDDEN_LAYER_SIZE>>()),
+    input_weight_grad_cache(
         std::make_unique<
             std::array<matrix_float_t, INPUT_WEIGHTS_COUNT>>())
 {
@@ -164,6 +170,9 @@ void NeuralNetwork::forward_propagate() const {
             auto const y = post_cache->at(i).at(j);
             assert(!std::isnan(z));
             assert(!std::isnan(y));
+            if (i == HIDDEN_LAYERS) {
+                assert(y > 0);
+            }
         }
     }
 
@@ -239,6 +248,7 @@ const {
     // # delta_(j+1) => delta_j
     // for j = (N-1)..=0
     //     grad = mult_scaled_first_t(post[j], delta, step_size / m)
+    //     biases[j] += delta * step_size / m
     //     delta = hadamard(
     //         mult_second_t(delta, weights[j]),
     //         leaky_relu_derivative(pre[j]))
@@ -247,6 +257,7 @@ const {
     //
     // # last but not least, input weights
     // input_grad = mult_scaled_first_t(input, delta, step_size / m)
+    // input_biases += delta * step_size / m
     // input_weights += input_grad
     //
 
@@ -284,8 +295,14 @@ const {
             post_cache->at(j).data(),
             delta_cache->data(),
             step_size / input_count,
-            grad_cache->data(),
+            weight_grad_cache->data(),
             HIDDEN_LAYER_SIZE, input_count, HIDDEN_LAYER_SIZE);
+
+        matrix::add_all_rows_scaled(
+            delta_cache->data(),
+            step_size / input_count,
+            biases->at(j).data(),
+            input_count, HIDDEN_LAYER_SIZE);
 
         for (auto i = 0; i < HIDDEN_LAYERS + 1; i++) {
             for (auto j = 0; j < BATCH_TENSOR_SIZE; j++) {
@@ -328,7 +345,7 @@ const {
 
         matrix::add(
             weights->at(j).data(),
-            grad_cache->data(),
+            weight_grad_cache->data(),
             weights->at(j).data(),
             HIDDEN_LAYER_SIZE, HIDDEN_LAYER_SIZE);
 
@@ -342,11 +359,17 @@ const {
         }
     }
 
+    matrix::add_all_rows_scaled(
+        delta_cache->data(),
+        step_size / input_count,
+        input_biases->data(),
+        input_count, HIDDEN_LAYER_SIZE);
+
     matrix::mult_scaled_first_t(
         input_layer,
         delta_cache->data(),
         step_size / input_count,
-        input_grad_cache->data(),
+        input_weight_grad_cache->data(),
         INPUT_LAYER_SIZE, input_count, HIDDEN_LAYER_SIZE);
 
     for (auto i = 0; i < HIDDEN_LAYERS + 1; i++) {
@@ -360,7 +383,7 @@ const {
 
     matrix::add(
         input_weights->data(),
-        input_grad_cache->data(),
+        input_weight_grad_cache->data(),
         input_weights->data(),
         INPUT_LAYER_SIZE, HIDDEN_LAYER_SIZE);
 

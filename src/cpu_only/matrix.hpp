@@ -57,6 +57,27 @@ namespace matrix {
         std::size_t n);
 
     /**
+     * B_j = B_j + s sum_i A_ij
+     *
+     * Adds the column-wise sum of A to B in place, scaled by s.
+     *
+     * All matrix values are stored with the second index changing the fastest,
+     * e.g. A = {a_11, a_12, a_21, a_22}.
+     *
+     * @param a an m × n matrix
+     * @param s a scalar value
+     * @param b an 1 × n matrix
+     * @param m the number of rows of A
+     * @param n the number of columns of A and B
+     */
+    void add_all_rows_scaled(
+        matrix_float_t const *a,
+        matrix_float_t s,
+        matrix_float_t *b,
+        size_t m,
+        size_t n);
+
+    /**
      * D = AB + C
      *
      * Multiplies A and B and adds C.

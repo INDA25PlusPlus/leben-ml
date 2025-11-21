@@ -48,6 +48,24 @@ void matrix::add(
     }
 }
 
+void matrix::add_all_rows_scaled(
+    matrix_float_t const *const a,
+    matrix_float_t const s,
+    matrix_float_t *const b,
+    size_t const m,
+    size_t const n)
+{
+    for (auto j = 0; j < n; j++) {
+        matrix_float_t accum = 0;
+        size_t ij = j;
+        for (auto i = 0; i < m; i++) {
+            accum += a[ij];
+            ij += n;
+        }
+        b[j] += accum * s;
+    }
+}
+
 void matrix::mult_add(
     matrix_float_t const *const a,
     matrix_float_t const *const b,

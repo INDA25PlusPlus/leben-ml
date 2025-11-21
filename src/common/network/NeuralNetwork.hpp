@@ -39,8 +39,11 @@ class NeuralNetwork {
 
     std::unique_ptr<LayerBatchTensor> delta_cache;
     std::unique_ptr<LayerBatchTensor> delta_accum;
-    std::unique_ptr<LayerMatrix> grad_cache;
-    std::unique_ptr<InputLayerMatrix> input_grad_cache;
+
+    // std::unique_ptr<LayerVector> biases_grad_cache;
+    std::unique_ptr<LayerMatrix> weight_grad_cache;
+    // std::unique_ptr<LayerVector> input_biases_grad_cache;
+    std::unique_ptr<InputLayerMatrix> input_weight_grad_cache;
 
 public:
     NeuralNetwork();
