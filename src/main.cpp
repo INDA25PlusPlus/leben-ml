@@ -13,6 +13,11 @@
 
 
 int main() {
+    // uncomment this and comment the binary classification example below to
+    // try the MNIST dataset. it's even more buggy though, so beware.
+    // NOTE: you'll also have to change the config (comment/uncomment the
+    // corresponding lines) in config.h
+
     // auto stream = DataStream::create(
     //     "dataset/t10k-images-idx3-ubyte",
     //     "dataset/t10k-labels-idx1-ubyte");
@@ -56,7 +61,9 @@ int main() {
 
 
 
-
+    // binary classification example:
+    // set of inputs: 1 0, 0 1
+    // goal: output should be identical to input.
 
     size_t const size = 1000;
     auto const images = std::make_unique<matrix_float_t[]>(2 * size);

@@ -10,15 +10,20 @@
 using matrix_float_t = float;
 
 // constants
+
+// MNIST //
 // constexpr size_t INPUT_LAYER_SIZE = MNIST_IMAGE_SIZE;
 // constexpr size_t OUTPUT_LAYER_SIZE = 10; // duh
 
+// BINARY CLASSIFICATION //
 constexpr size_t INPUT_LAYER_SIZE = 2;
 constexpr size_t OUTPUT_LAYER_SIZE = 2; // duh
 
 /////////////////////
 // hyperparameters //
 /////////////////////
+
+// MNIST //
 
 // constexpr size_t BATCH_SIZE = 1;
 //
@@ -28,6 +33,8 @@ constexpr size_t OUTPUT_LAYER_SIZE = 2; // duh
 // constexpr matrix_float_t LEAKY_PARAMETER = 0.1;
 
 
+
+// BINARY CLASSIFICATION //
 
 constexpr size_t BATCH_SIZE = 1;
 
